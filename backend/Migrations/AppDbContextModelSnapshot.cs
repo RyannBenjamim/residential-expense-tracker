@@ -17,64 +17,64 @@ namespace ControleDeGastos.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.29");
 
-            modelBuilder.Entity("ControleDeGastos.Api.Models.Pessoa", b =>
+            modelBuilder.Entity("ControleDeGastos.Api.Models.Person", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Idade")
+                    b.Property<int>("Age")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Nome")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Pessoas");
+                    b.ToTable("People");
                 });
 
-            modelBuilder.Entity("ControleDeGastos.Api.Models.Transacao", b =>
+            modelBuilder.Entity("ControleDeGastos.Api.Models.Transaction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Descricao")
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("PessoaId")
+                    b.Property<Guid>("PersonId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Tipo")
+                    b.Property<int>("Type")
                         .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PessoaId");
+                    b.HasIndex("PersonId");
 
-                    b.ToTable("Transacoes");
+                    b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("ControleDeGastos.Api.Models.Transacao", b =>
+            modelBuilder.Entity("ControleDeGastos.Api.Models.Transaction", b =>
                 {
-                    b.HasOne("ControleDeGastos.Api.Models.Pessoa", "Pessoa")
-                        .WithMany("Transacoes")
-                        .HasForeignKey("PessoaId")
+                    b.HasOne("ControleDeGastos.Api.Models.Person", "Person")
+                        .WithMany("Transactions")
+                        .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Pessoa");
+                    b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("ControleDeGastos.Api.Models.Pessoa", b =>
+            modelBuilder.Entity("ControleDeGastos.Api.Models.Person", b =>
                 {
-                    b.Navigation("Transacoes");
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }
