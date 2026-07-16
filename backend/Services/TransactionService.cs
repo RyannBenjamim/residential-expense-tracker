@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ControleDeGastos.Api.Data;
 using ControleDeGastos.Api.Dtos;
+using ControleDeGastos.Api.Exceptions; 
 using ControleDeGastos.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,12 +59,12 @@ namespace ControleDeGastos.Api.Services
             var person = await _context.People.FindAsync(dto.PersonId);
             if (person == null)
             {
-                throw new ArgumentException("The specified person does not exist.");
+                throw new ResourceNotFoundException("The specified person does not exist.");
             }
 
             if (person.Age < 18 && dto.Type == TransactionType.Income)
             {
-                throw new InvalidOperationException("Underage individuals (under 18) can only register expenses.");
+                throw new BusinessException("Underage individuals (under 18) can only register expenses.");
             }
 
             var transaction = new Transaction

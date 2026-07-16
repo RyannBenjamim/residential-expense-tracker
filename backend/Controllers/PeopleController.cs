@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ControleDeGastos.Api.Dtos;
 using ControleDeGastos.Api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ControleDeGastos.Api.Controllers
@@ -31,7 +32,10 @@ namespace ControleDeGastos.Api.Controllers
             var person = await _personService.GetByIdAsync(id);
             if (person == null)
             {
-                return NotFound(new { Message = "Person not found." });
+                return Problem(
+                    detail: "Person not found.",
+                    statusCode: StatusCodes.Status404NotFound
+                );
             }
             
             return Ok(person);
@@ -40,11 +44,6 @@ namespace ControleDeGastos.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<PersonResponseDto>> Create([FromBody] PersonCreateDto dto)
         {
-            if (!ModelState.IsValid) 
-            {
-                return BadRequest(ModelState);
-            }
-
             var createdPerson = await _personService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdPerson.Id }, createdPerson);
         }
@@ -55,7 +54,10 @@ namespace ControleDeGastos.Api.Controllers
             var deleted = await _personService.DeleteAsync(id);
             if (!deleted) 
             {
-                return NotFound(new { Message = "Person not found." });
+                return Problem(
+                    detail: "Person not found.",
+                    statusCode: StatusCodes.Status404NotFound
+                );
             }
 
             return NoContent(); 
