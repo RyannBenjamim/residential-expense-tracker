@@ -18,35 +18,37 @@ namespace ControleDeGastos.Api.Services
             _context = context;
         }
 
-        /// <summary>
-        /// Retorna a lista de pessoas cadastradas.
-        /// </summary>
         public async Task<IEnumerable<PersonResponseDto>> GetAllAsync()
         {
-            var people = await _context.People
-                .Include(p => p.Transactions)
-                .ToListAsync();
+            var people = await _context.People.ToListAsync();
 
-            return people.Select(p => MapToResponseDto(p));
+            return people.Select(p => new PersonResponseDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Age = p.Age,
+                TotalIncome = 0,
+                TotalExpenses = 0,
+                Balance = 0
+            });
         }
 
-        /// <summary>
-        /// Busca uma pessoa específica pelo ID.
-        /// </summary>
         public async Task<PersonResponseDto?> GetByIdAsync(Guid id)
         {
-            var person = await _context.People
-                .Include(p => p.Transactions)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
+            var person = await _context.People.FindAsync(id);
             if (person == null) return null;
 
-            return MapToResponseDto(person);
+            return new PersonResponseDto
+            {
+                Id = person.Id,
+                Name = person.Name,
+                Age = person.Age,
+                TotalIncome = 0,
+                TotalExpenses = 0,
+                Balance = 0
+            };
         }
 
-        /// <summary>
-        /// Cadastra uma nova pessoa no banco de dados.
-        /// </summary>
         public async Task<PersonResponseDto> CreateAsync(PersonCreateDto dto)
         {
             var person = new Person
@@ -58,13 +60,17 @@ namespace ControleDeGastos.Api.Services
             _context.People.Add(person);
             await _context.SaveChangesAsync();
 
-            return MapToResponseDto(person);
+            return new PersonResponseDto
+            {
+                Id = person.Id,
+                Name = person.Name,
+                Age = person.Age,
+                TotalIncome = 0,
+                TotalExpenses = 0,
+                Balance = 0
+            };
         }
 
-        /// <summary>
-        /// Exclui uma pessoa do banco. Por causa da configuração no DbContext,
-        /// todas as transações dela serão excluídas automaticamente do banco de dados.
-        /// </summary>
         public async Task<bool> DeleteAsync(Guid id)
         {
             var person = await _context.People.FindAsync(id);
@@ -75,9 +81,6 @@ namespace ControleDeGastos.Api.Services
             return true;
         }
 
-        /// <summary>
-        /// Consolida os saldos individuais de cada pessoa e soma os totais gerais da residência.
-        /// </summary>
         public async Task<DashboardResponseDto> GetDashboardAsync()
         {
             var peopleFromDb = await _context.People
@@ -98,14 +101,15 @@ namespace ControleDeGastos.Api.Services
             };
         }
 
-        // Método auxiliar privado para centralizar o cálculo financeiro e mapeamento
         private static PersonResponseDto MapToResponseDto(Person person)
         {
-            var income = person.Transactions
+            var transactions = person.Transactions ?? new List<Transaction>();
+
+            var income = transactions
                 .Where(t => t.Type == TransactionType.Income)
                 .Sum(t => t.Amount);
 
-            var expenses = person.Transactions
+            var expenses = transactions
                 .Where(t => t.Type == TransactionType.Expense)
                 .Sum(t => t.Amount);
 

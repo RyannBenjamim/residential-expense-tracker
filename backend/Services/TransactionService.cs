@@ -53,9 +53,6 @@ namespace ControleDeGastos.Api.Services
             };
         }
 
-        /// <summary>
-        /// Cria uma transação validando a idade do usuário e a existência do ID no banco.
-        /// </summary>
         public async Task<TransactionResponseDto> CreateAsync(TransactionCreateDto dto)
         {
             var person = await _context.People.FindAsync(dto.PersonId);
