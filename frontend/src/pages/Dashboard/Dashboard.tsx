@@ -12,7 +12,7 @@ const Dashboard = () => {
   const dadosCasas: PersonaBalance[] = [
     { nome: 'Fulano', receitas: 5000, despesas: 2500, saldo: 2500 },
     { nome: 'Beltrano', receitas: 3200, despesas: 3500, saldo: -300 },
-    { nome: 'Fulana', receitas: 1200, despesas: 800, saldo: 400 },
+    { nome: 'Fulana', receitas: 6000, despesas: 800, saldo: 400 },
   ];
 
   const totalReceitas = dadosCasas.reduce((acc, curr) => acc + curr.receitas, 0);
