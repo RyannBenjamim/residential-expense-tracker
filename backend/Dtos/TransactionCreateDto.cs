@@ -16,6 +16,7 @@ namespace ControleDeGastos.Api.Dtos
         public decimal Amount { get; set; }
 
         [Required(ErrorMessage = "Transaction type (Income or Expense) is required.")]
+        [EnumDataType(typeof(TransactionType), ErrorMessage = "Invalid transaction type. Allowed values are Income (0) or Expense (1).")]
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TransactionType Type { get; set; }
 

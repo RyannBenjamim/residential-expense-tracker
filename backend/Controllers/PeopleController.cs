@@ -37,7 +37,7 @@ namespace ControleDeGastos.Api.Controllers
                     statusCode: StatusCodes.Status404NotFound
                 );
             }
-            
+
             return Ok(person);
         }
 
@@ -51,16 +51,15 @@ namespace ControleDeGastos.Api.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _personService.DeleteAsync(id);
-            if (!deleted) 
-            {
-                return Problem(
-                    detail: "Person not found.",
-                    statusCode: StatusCodes.Status404NotFound
-                );
-            }
+            await _personService.DeleteAsync(id);
+            return NoContent();
+        }
 
-            return NoContent(); 
+        [HttpGet("dashboard")]
+        public async Task<ActionResult<DashboardResponseDto>> GetDashboard()
+        {
+            var dashboard = await _personService.GetDashboardAsync();
+            return Ok(dashboard);
         }
     }
 }

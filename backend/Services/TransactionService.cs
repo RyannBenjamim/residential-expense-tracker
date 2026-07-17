@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ControleDeGastos.Api.Data;
 using ControleDeGastos.Api.Dtos;
-using ControleDeGastos.Api.Exceptions; 
+using ControleDeGastos.Api.Exceptions;
 using ControleDeGastos.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +22,6 @@ namespace ControleDeGastos.Api.Services
         public async Task<IEnumerable<TransactionResponseDto>> GetAllAsync()
         {
             return await _context.Transactions
-                .Include(t => t.Person)
                 .Select(t => new TransactionResponseDto
                 {
                     Id = t.Id,
@@ -30,28 +29,25 @@ namespace ControleDeGastos.Api.Services
                     Amount = t.Amount,
                     Type = t.Type,
                     PersonId = t.PersonId,
-                    PersonName = t.Person != null ? t.Person.Name : "Unknown"
+                    PersonName = t.Person!.Name 
                 })
                 .ToListAsync();
         }
 
         public async Task<TransactionResponseDto?> GetByIdAsync(Guid id)
         {
-            var transaction = await _context.Transactions
-                .Include(t => t.Person)
-                .FirstOrDefaultAsync(t => t.Id == id);
-
-            if (transaction == null) return null;
-
-            return new TransactionResponseDto
-            {
-                Id = transaction.Id,
-                Description = transaction.Description,
-                Amount = transaction.Amount,
-                Type = transaction.Type,
-                PersonId = transaction.PersonId,
-                PersonName = transaction.Person != null ? transaction.Person.Name : "Unknown"
-            };
+            return await _context.Transactions
+                .Where(t => t.Id == id)
+                .Select(t => new TransactionResponseDto
+                {
+                    Id = t.Id,
+                    Description = t.Description,
+                    Amount = t.Amount,
+                    Type = t.Type,
+                    PersonId = t.PersonId,
+                    PersonName = t.Person!.Name
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<TransactionResponseDto> CreateAsync(TransactionCreateDto dto)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ControleDeGastos.Api.Data;
 using ControleDeGastos.Api.Dtos;
+using ControleDeGastos.Api.Exceptions; 
 using ControleDeGastos.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,15 +22,23 @@ namespace ControleDeGastos.Api.Services
         public async Task<IEnumerable<PersonResponseDto>> GetAllAsync()
         {
             var people = await _context.People.ToListAsync();
+            var transactions = await _context.Transactions.ToListAsync();
 
-            return people.Select(p => new PersonResponseDto
+            return people.Select(p =>
             {
-                Id = p.Id,
-                Name = p.Name,
-                Age = p.Age,
-                TotalIncome = 0,
-                TotalExpenses = 0,
-                Balance = 0
+                var personTransactions = transactions.Where(t => t.PersonId == p.Id).ToList();
+                var income = personTransactions.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount);
+                var expenses = personTransactions.Where(t => t.Type == TransactionType.Expense).Sum(t => t.Amount);
+
+                return new PersonResponseDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Age = p.Age,
+                    TotalIncome = income,
+                    TotalExpenses = expenses,
+                    Balance = income - expenses
+                };
             });
         }
 
@@ -38,14 +47,21 @@ namespace ControleDeGastos.Api.Services
             var person = await _context.People.FindAsync(id);
             if (person == null) return null;
 
+            var personTransactions = await _context.Transactions
+                .Where(t => t.PersonId == id)
+                .ToListAsync();
+
+            var income = personTransactions.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount);
+            var expenses = personTransactions.Where(t => t.Type == TransactionType.Expense).Sum(t => t.Amount);
+
             return new PersonResponseDto
             {
                 Id = person.Id,
                 Name = person.Name,
                 Age = person.Age,
-                TotalIncome = 0,
-                TotalExpenses = 0,
-                Balance = 0
+                TotalIncome = income,
+                TotalExpenses = expenses,
+                Balance = income - expenses
             };
         }
 
@@ -74,7 +90,10 @@ namespace ControleDeGastos.Api.Services
         public async Task<bool> DeleteAsync(Guid id)
         {
             var person = await _context.People.FindAsync(id);
-            if (person == null) return false;
+            if (person == null)
+            {
+                throw new ResourceNotFoundException("The specified person does not exist.");
+            }
 
             _context.People.Remove(person);
             await _context.SaveChangesAsync();
@@ -83,11 +102,25 @@ namespace ControleDeGastos.Api.Services
 
         public async Task<DashboardResponseDto> GetDashboardAsync()
         {
-            var peopleFromDb = await _context.People
-                .Include(p => p.Transactions)
-                .ToListAsync();
+            var people = await _context.People.ToListAsync();
+            var transactions = await _context.Transactions.ToListAsync();
 
-            var peopleDtos = peopleFromDb.Select(p => MapToResponseDto(p)).ToList();
+            var peopleDtos = people.Select(p =>
+            {
+                var personTransactions = transactions.Where(t => t.PersonId == p.Id).ToList();
+                var income = personTransactions.Where(t => t.Type == TransactionType.Income).Sum(t => t.Amount);
+                var expenses = personTransactions.Where(t => t.Type == TransactionType.Expense).Sum(t => t.Amount);
+
+                return new PersonResponseDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Age = p.Age,
+                    TotalIncome = income,
+                    TotalExpenses = expenses,
+                    Balance = income - expenses
+                };
+            }).ToList();
 
             decimal generalIncome = peopleDtos.Sum(p => p.TotalIncome);
             decimal generalExpenses = peopleDtos.Sum(p => p.TotalExpenses);
@@ -98,29 +131,6 @@ namespace ControleDeGastos.Api.Services
                 GeneralIncome = generalIncome,
                 GeneralExpenses = generalExpenses,
                 NetBalance = generalIncome - generalExpenses
-            };
-        }
-
-        private static PersonResponseDto MapToResponseDto(Person person)
-        {
-            var transactions = person.Transactions ?? new List<Transaction>();
-
-            var income = transactions
-                .Where(t => t.Type == TransactionType.Income)
-                .Sum(t => t.Amount);
-
-            var expenses = transactions
-                .Where(t => t.Type == TransactionType.Expense)
-                .Sum(t => t.Amount);
-
-            return new PersonResponseDto
-            {
-                Id = person.Id,
-                Name = person.Name,
-                Age = person.Age,
-                TotalIncome = income,
-                TotalExpenses = expenses,
-                Balance = income - expenses
             };
         }
     }

@@ -9,7 +9,7 @@ namespace ControleDeGastos.Api.Dtos
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Age is required.")]
-        [Range(0, 150, ErrorMessage = "Age must be between 0 and 150.")]
+        [Range(1, 150, ErrorMessage = "Age must be between 1 and 150.")]
         public int Age { get; set; }
     }
 }
