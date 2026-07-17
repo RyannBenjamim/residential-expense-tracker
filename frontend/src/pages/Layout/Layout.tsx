@@ -9,7 +9,7 @@ const Layout = () => {
       <header className={styles.header}>
         <div className={styles.header_content}>
           <div className={styles.logo}>
-            <span>💰</span> GastoResidencial
+            <span><i className="fa-solid fa-sack-dollar"></i></span> Controle de Gastos
           </div>
           
           <nav className={styles.nav}>

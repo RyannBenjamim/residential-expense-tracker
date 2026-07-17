@@ -1,0 +1,109 @@
+.dashboard_container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page_title {
+  color: var(--color-text-strong);
+  font-size: 1.75rem;
+}
+
+.cards_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+}
+
+.card h3 {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card .value {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.success {
+  color: var(--color-success) !important;
+}
+
+.danger {
+  color: var(--color-danger) !important;
+}
+
+.dashboard_content {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .dashboard_content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.table_section, .chart_section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.table_section h3, .chart_section h3 {
+  font-size: 1.1rem;
+  color: var(--color-text-strong);
+}
+
+.table_wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+td {
+  color: var(--color-text);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.chart_wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
