@@ -82,31 +82,38 @@
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 108, 92, 231), 0.15);
 }
 
-.submit_btn {
-  background: var(--color-primary);
-  color: var(--color-btn-text);
-  border: none;
-  padding: 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: filter 0.2s ease;
-  margin-top: 6px;
-}
-
-.submit_btn:hover {
-  filter: brightness(1.1);
-}
-
 .cards_grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.extrato_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--color-tag);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.extrato_btn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-btn-text);
+  border-color: var(--color-primary-light);
+  transform: translateY(-1px);
 }
 
 .person_card {

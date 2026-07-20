@@ -113,8 +113,9 @@ tr:last-child td {
   max-width: 100%; 
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 8px;
+  padding: 8px 12px;
   display: block; 
+  box-sizing: border-box;
 }
 
 .chart_scroll_container > div {

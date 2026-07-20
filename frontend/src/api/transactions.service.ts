@@ -12,6 +12,7 @@ export function findAll() {
 export function findOne(id: string) {
   return genericRequest<Transaction>(`/api/Transactions/${id}`, 'GET');
 }
+
 export function findByPersonId(personId: string) {
   return genericRequest<Transaction[]>(`/api/Transactions/person/${personId}`, 'GET');
 }

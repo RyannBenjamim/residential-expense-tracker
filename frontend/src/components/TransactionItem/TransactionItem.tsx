@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Transaction } from '../../types/transactions';
 import styles from './styles.module.css'; 
+import { formatCurrencyBR } from '../../utils/formatCurrencyBR';
 
 interface ItemProps {
   transaction: Transaction;
@@ -35,7 +36,7 @@ export const TransactionItem: React.FC<ItemProps> = ({ transaction, personName, 
 
       <div className={styles.item_actions}>
         <span className={`${styles.price} ${isReceita ? styles.text_success : styles.text_danger}`}>
-          {isReceita ? '+' : '-'} R$ {transaction.amount.toFixed(2)}
+          {isReceita ? '+' : '-'} R$ {formatCurrencyBR(transaction.amount)}
         </span>
         
         <button 

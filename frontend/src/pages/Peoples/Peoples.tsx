@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   create as createPerson, 
   findAll as getPeople, 
@@ -8,6 +9,9 @@ import type { Person } from '../../types/people';
 import styles from './styles.module.css';
 import Loading from '../../components/Loading/Loading';
 import Pagination from '../../components/Pagination/Pagination'; 
+import Button from '../../components/Button/Button';
+import { Header } from '../../components/Header/Header';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -17,6 +21,7 @@ const Peoples = () => {
   const [idade, setIdade] = useState('');
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
 
   useEffect(() => {
     async function carregarPessoas() {
@@ -52,11 +57,13 @@ const Peoples = () => {
     }
   };
 
-  const handleDeletar = async (id: string) => {
+  const handleConfirmDelete = async () => {
+    if (!personToDelete) return;
+
     try {
-      await removePerson(id);
+      await removePerson(personToDelete.id);
       setPessoas((prev) => {
-        const novaLista = prev.filter(p => p.id !== id);
+        const novaLista = prev.filter((p) => p.id !== personToDelete.id);
         
         const totalPaginasApisDeletar = Math.ceil(novaLista.length / ITEMS_PER_PAGE);
         if (currentPage > totalPaginasApisDeletar && currentPage > 1) {
@@ -67,6 +74,8 @@ const Peoples = () => {
       });
     } catch (error) {
       console.error('Erro ao deletar pessoa:', error);
+    } finally {
+      setPersonToDelete(null);
     }
   };
 
@@ -81,9 +90,7 @@ const Peoples = () => {
   if (loading) {
     return (
       <div className={styles.peoples_container}>
-        <header className={styles.page_header}>
-          <h1 className={styles.page_title}>Gerenciamento de Pessoas</h1>
-        </header>
+        <Header title="Gerenciamento de Pessoas" />
         <div className={styles.empty_state}>
           <Loading />
         </div>
@@ -98,10 +105,10 @@ const Peoples = () => {
 
   return (
     <div className={styles.peoples_container}>
-      <header className={styles.page_header}>
-        <h1 className={styles.page_title}>Gerenciamento de Pessoas</h1>
-        <p className={styles.page_subtitle}>Cadastre e gerencie os moradores da residência</p>
-      </header>
+      <Header 
+        title="Gerenciamento de Pessoas" 
+        subtitle="Cadastre e gerencie os moradores da residência" 
+      />
 
       <div className={styles.peoples_layout}>
         <section className={styles.form_section}>
@@ -134,9 +141,9 @@ const Peoples = () => {
               />
             </div>
 
-            <button type="submit" className={styles.submit_btn}>
-              <span><i className="fa-solid fa-plus"></i></span> Adicionar Pessoa
-            </button>
+            <Button type="submit" icon="fa-solid fa-plus">
+              Adicionar Pessoa
+            </Button>
           </form>
         </section>
 
@@ -162,15 +169,25 @@ const Peoples = () => {
                         <p>{pessoa.age} {pessoa.age === 1 ? 'ano' : 'anos'}</p>
                       </div>
                     </div>
-                    
-                    <button 
-                      onClick={() => handleDeletar(pessoa.id)} 
-                      className={styles.delete_btn}
-                      title={`Remover ${pessoa.name}`}
-                      aria-label={`Remover ${pessoa.name}`}
-                    >
-                      <i className="fa-solid fa-trash"></i>
-                    </button>
+
+                    <div className={styles.actions}>
+                      <Link 
+                        to={`/extrato-integrante/${pessoa.id}`} 
+                        className={styles.extrato_btn}
+                        title={`Ver extrato de ${pessoa.name}`}
+                      >
+                        <i className="fa-solid fa-receipt"></i>
+                      </Link>
+
+                      <button 
+                        onClick={() => setPersonToDelete(pessoa)} 
+                        className={styles.delete_btn}
+                        title={`Remover ${pessoa.name}`}
+                        aria-label={`Remover ${pessoa.name}`}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -185,6 +202,16 @@ const Peoples = () => {
           )}
         </section>
       </div>
+
+      <ConfirmModal
+        isOpen={Boolean(personToDelete)}
+        title="Confirmar Exclusão"
+        message={`Tem certeza que deseja remover ${personToDelete?.name}? Esta ação não poderá ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setPersonToDelete(null)}
+      />
     </div>
   );
 };

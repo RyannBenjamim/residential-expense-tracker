@@ -9,7 +9,16 @@ export const genericRequest = async <T>(url: string, method: string, data?: any)
     });
     return response.data;
   } catch (error: any) {
-    const msg = error?.response?.data?.error || error.message || "Erro desconhecido";
+    const responseData = error?.response?.data;
+
+    const msg =
+      responseData?.message ||
+      responseData?.detail ||
+      responseData?.title ||
+      responseData?.error ||
+      error.message ||
+      "Erro desconhecido";
+
     throw new Error(msg);
   }
-}
+};

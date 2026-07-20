@@ -13,6 +13,7 @@ import type { Transaction, TransactionType } from '../../types/transactions';
 import styles from './styles.module.css';
 import Loading from '../../components/Loading/Loading';
 import Pagination from '../../components/Pagination/Pagination';
+import { Header } from '../../components/Header/Header';
 
 const ITEMS_PER_PAGE = 4;
 
@@ -50,6 +51,7 @@ const Transactions = () => {
       setCurrentPage(1); 
     } catch (error) {
       console.error('Erro ao salvar transação:', error);
+      throw error;
     }
   };
 
@@ -102,9 +104,9 @@ const Transactions = () => {
   if (loading) {
     return (
       <div className={styles.transactions_container}>
-        <header className={styles.page_header}>
-          <h1 className={styles.page_title}>Histórico de Transações</h1>
-        </header>
+        <Header 
+          title="Histórico de Transações" 
+        />
         <div className={styles.empty_state}>
           <Loading />
         </div>
@@ -114,10 +116,10 @@ const Transactions = () => {
 
   return (
     <div className={styles.transactions_container}>
-      <header className={styles.page_header}>
-        <h1 className={styles.page_title}>Histórico de Transações</h1>
-        <p className={styles.page_subtitle}>Adicione e controle as movimentações financeiras da residência</p>
-      </header>
+      <Header 
+        title="Histórico de Transações" 
+        subtitle="Adicione e controle as movimentações financeiras da residência" 
+      />
 
       <div className={styles.transactions_layout}>
         <TransactionForm 
@@ -136,7 +138,7 @@ const Transactions = () => {
 
           {transacoesFiltradas.length === 0 ? (
             <div className={styles.empty_state}>
-              <span className={styles.empty_icon}><i className="fa-solid fa-note-sticky"></i></span>
+              <span className={styles.empty_icon}><i className="fa-solid fa-receipt"></i></span>
               <p>Nenhuma movimentação encontrada.</p>
             </div>
           ) : (

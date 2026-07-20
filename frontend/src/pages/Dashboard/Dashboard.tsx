@@ -4,6 +4,8 @@ import { getDashboard } from '../../api/people.service';
 import type { Dashboard as DashboardData } from '../../types/people'; 
 import styles from './styles.module.css';
 import Loading from '../../components/Loading/Loading';
+import { Header } from '../../components/Header/Header';
+import { formatCurrencyBR } from '../../utils/formatCurrencyBR';
 
 const Dashboard = () => {
   const [dados, setDados] = useState<DashboardData | null>(null);
@@ -27,7 +29,9 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className={styles.dashboard_container}>
-        <h1 className={styles.page_title}>Dashboard</h1>
+        <Header 
+          title="Dashboard" 
+        />
         <div className={styles.loading_state}>
           <Loading />
         </div>
@@ -42,21 +46,23 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard_container}>
-      <h1 className={styles.page_title}>Dashboard</h1>
+      <Header 
+        title="Dashboard" 
+      />
 
       <div className={styles.cards_grid}>
         <div className={styles.card}>
           <h3>Total Receitas</h3>
-          <p className={`${styles.value} ${styles.success}`}>R$ {totalReceitas.toFixed(2)}</p>
+          <p className={`${styles.value} ${styles.success}`}>R$ {formatCurrencyBR(totalReceitas)}</p>
         </div>
         <div className={styles.card}>
           <h3>Total Despesas</h3>
-          <p className={`${styles.value} ${styles.danger}`}>R$ {totalDespesas.toFixed(2)}</p>
+          <p className={`${styles.value} ${styles.danger}`}>R$ {formatCurrencyBR(totalDespesas)}</p>
         </div>
         <div className={styles.card}>
           <h3>Saldo Líquido</h3>
           <p className={`${styles.value} ${saldoLiquido >= 0 ? styles.success : styles.danger}`}>
-            R$ {saldoLiquido.toFixed(2)}
+            R$ {formatCurrencyBR(saldoLiquido)}
           </p>
         </div>
       </div>
@@ -79,10 +85,10 @@ const Dashboard = () => {
                 {people.map((pessoa) => (
                   <tr key={pessoa.id}>
                     <td><strong>{pessoa.name}</strong></td>
-                    <td className={styles.success}>R$ {pessoa.totalIncome.toFixed(2)}</td>
-                    <td className={styles.danger}>R$ {pessoa.totalExpenses.toFixed(2)}</td>
+                    <td className={styles.success}>R$ {formatCurrencyBR(pessoa.totalIncome)}</td>
+                    <td className={styles.danger}>R$ {formatCurrencyBR(pessoa.totalExpenses)}</td>
                     <td className={pessoa.balance >= 0 ? styles.success : styles.danger}>
-                      <strong>R$ {pessoa.balance.toFixed(2)}</strong>
+                      <strong>R$ {formatCurrencyBR(pessoa.balance)}</strong>
                     </td>
                   </tr>
                 ))}
@@ -98,7 +104,7 @@ const Dashboard = () => {
               width={people.length > 5 ? people.length * 80 : 500} 
               height={250} 
               data={people} 
-              margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
               <XAxis dataKey="name" stroke="var(--color-text-muted)" fontSize={12} />

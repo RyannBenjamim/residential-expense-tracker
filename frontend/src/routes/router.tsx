@@ -2,9 +2,9 @@ import { createBrowserRouter } from "react-router-dom";
 import Transactions from "../pages/Transactions/Transactions";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import Peoples from "../pages/Peoples/Peoples";
+import UserTransactions from "../pages/UserTransactions/UserTransactions";
 import Layout from "../pages/Layout/Layout";
 
-// Configuração das Rotas
 const router = createBrowserRouter([
   {
     path: '/',
@@ -23,6 +23,10 @@ const router = createBrowserRouter([
         element: <Transactions />,
       },
       {
+        path: '/extrato-integrante/:personId', 
+        element: <UserTransactions />,
+      },
+      {
         path: '*',
         element: <div style={{ padding: '20px' }}><h2>404 - Página não encontrada</h2></div>,
       },
@@ -30,4 +34,4 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default router
+export default router;
