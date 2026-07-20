@@ -1,38 +1,41 @@
 import React from 'react';
-
-interface Transaction {
-  id: string;
-  descricao: string;
-  valor: number;
-  tipo: 'receita' | 'despesa';
-  pessoaNome: string;
-  data: string;
-}
+import type { Transaction } from '../../types/transactions';
+import styles from './styles.module.css'; 
 
 interface ItemProps {
   transaction: Transaction;
+  personName: string;
   onDelete: (id: string) => void;
-  styles: Record<string, string>;
 }
 
-export const TransactionItem: React.FC<ItemProps> = ({ transaction, onDelete, styles }) => {
-  const isReceita = transaction.tipo === 'receita';
+export const TransactionItem: React.FC<ItemProps> = ({ transaction, personName, onDelete }) => {
+  const isReceita = transaction.type === 'Income' || transaction.type === 0;
+
+  const formatarData = (dateString?: string) => {
+    if (!dateString) return new Date().toLocaleDateString('pt-BR');
+    const dataObj = new Date(dateString);
+    return dataObj.toLocaleDateString('pt-BR');
+  };
 
   return (
     <div className={`${styles.transaction_item} ${isReceita ? styles.border_success : styles.border_danger}`}>
       <div className={styles.item_main}>
         <div className={styles.info_block}>
-          <h3>{transaction.descricao}</h3>
+          <h3>{transaction.description}</h3>
           <div className={styles.meta_info}>
-            <span className={styles.responsible}><i className="fa-regular fa-user"></i> {transaction.pessoaNome}</span>
-            <span className={styles.date}><i className="fa-solid fa-calendar"></i> {transaction.data.split('-').reverse().join('/')}</span>
+            <span className={styles.responsible}>
+              <i className="fa-regular fa-user"></i> {personName}
+            </span>
+            <span className={styles.date}>
+              <i className="fa-solid fa-calendar"></i> {formatarData(transaction.createdAt)}
+            </span>
           </div>
         </div>
       </div>
 
       <div className={styles.item_actions}>
         <span className={`${styles.price} ${isReceita ? styles.text_success : styles.text_danger}`}>
-          {isReceita ? '+' : '-'} R$ {transaction.valor.toFixed(2)}
+          {isReceita ? '+' : '-'} R$ {transaction.amount.toFixed(2)}
         </span>
         
         <button 

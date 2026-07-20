@@ -1,0 +1,30 @@
+.filter_tabs {
+  display: flex;
+  background: var(--color-background);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.tab_btn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab_btn:hover {
+  color: var(--color-text-strong);
+}
+
+.tab_active {
+  background: var(--color-surface);
+  color: var(--color-text-strong) !important;
+  box-shadow: var(--shadow-card);
+  font-weight: 600;
+}

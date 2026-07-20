@@ -1,14 +1,14 @@
 import React from 'react';
+import styles from './styles.module.css'; 
 
 type FilterType = 'todos' | 'receita' | 'despesa';
 
 interface FilterProps {
   currentFilter: FilterType;
   onFilterChange: (filter: FilterType) => void;
-  styles: Record<string, string>;
 }
 
-export const TransactionFilter: React.FC<FilterProps> = ({ currentFilter, onFilterChange, styles }) => {
+export const TransactionFilter: React.FC<FilterProps> = ({ currentFilter, onFilterChange }) => {
   return (
     <div className={styles.filter_tabs}>
       {(['todos', 'receita', 'despesa'] as FilterType[]).map((type) => (

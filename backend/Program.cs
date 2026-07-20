@@ -10,6 +10,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowViteApp",
+        policy => policy.WithOrigins("http://localhost:5173")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +32,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowViteApp");
 
 app.UseHttpsRedirection();
 

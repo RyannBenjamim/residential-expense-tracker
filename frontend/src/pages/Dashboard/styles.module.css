@@ -65,6 +65,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
 }
 
 .table_section h3, .chart_section h3 {
@@ -73,6 +74,8 @@
 }
 
 .table_wrapper {
+  max-height: 350px;
+  overflow-y: auto;
   overflow-x: auto;
 }
 
@@ -91,6 +94,10 @@ th, td {
 th {
   color: var(--color-text-muted);
   font-weight: 600;
+  background: var(--color-surface); 
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 td {
@@ -101,9 +108,32 @@ tr:last-child td {
   border-bottom: none;
 }
 
-.chart_wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.chart_scroll_container {
+  width: 100%;
+  max-width: 100%; 
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  display: block; 
+}
+
+.chart_scroll_container > div {
+  flex-shrink: 0;
+}
+
+.chart_scroll_container::-webkit-scrollbar,
+.table_wrapper::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.chart_scroll_container::-webkit-scrollbar-thumb,
+.table_wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.chart_scroll_container::-webkit-scrollbar-track,
+.table_wrapper::-webkit-scrollbar-track {
+  background: transparent;
 }
