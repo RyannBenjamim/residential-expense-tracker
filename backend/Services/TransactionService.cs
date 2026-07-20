@@ -50,6 +50,21 @@ namespace ControleDeGastos.Api.Services
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<TransactionResponseDto>> GetByPersonIdAsync(Guid personId)
+        {
+            return await _context.Transactions
+                .Where(t => t.PersonId == personId)
+                .Select(t => new TransactionResponseDto
+                {
+                    Id = t.Id,
+                    Description = t.Description,
+                    Amount = t.Amount,
+                    Type = t.Type,
+                    PersonId = t.PersonId
+                })
+                .ToListAsync();
+        }
+
         public async Task<TransactionResponseDto> CreateAsync(TransactionCreateDto dto)
         {
             var person = await _context.People.FindAsync(dto.PersonId);

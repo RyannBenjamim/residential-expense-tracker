@@ -41,6 +41,13 @@ namespace ControleDeGastos.Api.Controllers
             return Ok(transaction);
         }
 
+        [HttpGet("person/{personId}")]
+        public async Task<ActionResult<IEnumerable<TransactionResponseDto>>> GetByPersonId(Guid personId)
+        {
+            var transactions = await _transactionService.GetByPersonIdAsync(personId);
+            return Ok(transactions);
+        }
+
         [HttpPost]
         public async Task<ActionResult<TransactionResponseDto>> Create([FromBody] TransactionCreateDto dto)
         {

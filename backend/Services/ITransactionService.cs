@@ -9,6 +9,7 @@ namespace ControleDeGastos.Api.Services
     {
         Task<IEnumerable<TransactionResponseDto>> GetAllAsync();
         Task<TransactionResponseDto?> GetByIdAsync(Guid id);
+        Task<IEnumerable<TransactionResponseDto>> GetByPersonIdAsync(Guid personId);
         Task<TransactionResponseDto> CreateAsync(TransactionCreateDto dto);
     }
 }
