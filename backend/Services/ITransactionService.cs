@@ -11,5 +11,6 @@ namespace ControleDeGastos.Api.Services
         Task<TransactionResponseDto?> GetByIdAsync(Guid id);
         Task<IEnumerable<TransactionResponseDto>> GetByPersonIdAsync(Guid personId);
         Task<TransactionResponseDto> CreateAsync(TransactionCreateDto dto);
+        Task DeleteAsync(Guid id);
     }
 }

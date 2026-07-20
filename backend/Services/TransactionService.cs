@@ -99,5 +99,17 @@ namespace ControleDeGastos.Api.Services
                 PersonName = person.Name
             };
         }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var transaction = await _context.Transactions.FindAsync(id);
+            if (transaction == null)
+            {
+                throw new ResourceNotFoundException("Transaction not found.");
+            }
+
+            _context.Transactions.Remove(transaction);
+            await _context.SaveChangesAsync();
+        }
     }
 }

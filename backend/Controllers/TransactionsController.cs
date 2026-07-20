@@ -54,5 +54,12 @@ namespace ControleDeGastos.Api.Controllers
             var createdTransaction = await _transactionService.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = createdTransaction.Id }, createdTransaction);
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _transactionService.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }
