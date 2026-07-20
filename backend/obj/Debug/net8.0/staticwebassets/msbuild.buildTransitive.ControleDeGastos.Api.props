@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\ControleDeGastos.Api.props" />
-</Project>

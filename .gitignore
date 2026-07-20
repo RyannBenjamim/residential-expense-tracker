@@ -482,3 +482,13 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+Snippet de código
+# SQLite Database files (Local dev)
+*.db
+*.db-shm
+*.db-wal
+
+# Frontend build output
+frontend/dist/
+frontend/dist-ssr/
