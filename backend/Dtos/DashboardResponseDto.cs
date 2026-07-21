@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace ControleDeGastos.Api.Dtos
 {
     public class DashboardResponseDto

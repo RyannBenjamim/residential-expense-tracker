@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ControleDeGastos.Api.Data;
 using ControleDeGastos.Api.Dtos;
 using ControleDeGastos.Api.Exceptions;
@@ -10,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ControleDeGastos.Api.Services
 {
+    /// <summary>
+    /// Serviço responsável pelas regras de negócio relacionadas às transações financeiras.
+    /// </summary>
     public class TransactionService : ITransactionService
     {
         private readonly AppDbContext _context;
@@ -19,6 +18,9 @@ namespace ControleDeGastos.Api.Services
             _context = context;
         }
 
+        /// <summary>
+        /// Retorna todas as transações cadastradas juntamente com o nome da pessoa responsável.
+        /// </summary>
         public async Task<IEnumerable<TransactionResponseDto>> GetAllAsync()
         {
             return await _context.Transactions
@@ -29,11 +31,14 @@ namespace ControleDeGastos.Api.Services
                     Amount = t.Amount,
                     Type = t.Type,
                     PersonId = t.PersonId,
-                    PersonName = t.Person!.Name 
+                    PersonName = t.Person!.Name
                 })
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Retorna uma transação a partir do seu identificador.
+        /// </summary>
         public async Task<TransactionResponseDto?> GetByIdAsync(Guid id)
         {
             return await _context.Transactions
@@ -50,6 +55,9 @@ namespace ControleDeGastos.Api.Services
                 .FirstOrDefaultAsync();
         }
 
+        /// <summary>
+        /// Retorna todas as transações pertencentes a uma pessoa.
+        /// </summary>
         public async Task<IEnumerable<TransactionResponseDto>> GetByPersonIdAsync(Guid personId)
         {
             return await _context.Transactions
@@ -65,14 +73,21 @@ namespace ControleDeGastos.Api.Services
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Cria uma nova transação após validar as regras de negócio.
+        /// </summary>
         public async Task<TransactionResponseDto> CreateAsync(TransactionCreateDto dto)
         {
+            // Garante que a transação será vinculada a uma pessoa existente.
             var person = await _context.People.FindAsync(dto.PersonId);
+
             if (person == null)
             {
                 throw new ResourceNotFoundException("The specified person does not exist.");
             }
 
+            // Regra de negócio:
+            // Pessoas menores de 18 anos podem registrar apenas despesas.
             if (person.Age < 18 && dto.Type == TransactionType.Income)
             {
                 throw new BusinessException("Underage individuals (under 18) can only register expenses.");
@@ -100,9 +115,13 @@ namespace ControleDeGastos.Api.Services
             };
         }
 
+        /// <summary>
+        /// Remove uma transação cadastrada a partir do seu identificador.
+        /// </summary>
         public async Task DeleteAsync(Guid id)
         {
             var transaction = await _context.Transactions.FindAsync(id);
+
             if (transaction == null)
             {
                 throw new ResourceNotFoundException("Transaction not found.");

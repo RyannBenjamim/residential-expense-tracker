@@ -1,5 +1,3 @@
-using System;
-
 namespace ControleDeGastos.Api.Dtos
 {
     public class PersonResponseDto
