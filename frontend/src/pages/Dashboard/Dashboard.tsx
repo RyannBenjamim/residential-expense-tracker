@@ -8,22 +8,22 @@ import { Header } from '../../components/Header/Header';
 import { formatCurrencyBR } from '../../utils/formatCurrencyBR';
 
 const Dashboard = () => {
-  const [dados, setDados] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function carregarDashboard() {
+    async function loadDashboard() {
       try {
         const response = await getDashboard();
-        setDados(response);
+        setData(response);
       } catch (error) {
-        console.error('Erro ao buscar dados do dashboard:', error);
+        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }
     }
 
-    carregarDashboard();
+    loadDashboard();
   }, []);
 
   if (loading) {
@@ -39,10 +39,10 @@ const Dashboard = () => {
     );
   }
 
-  const people = dados?.people || [];
-  const totalReceitas = dados?.generalIncome || 0;
-  const totalDespesas = dados?.generalExpenses || 0;
-  const saldoLiquido = dados?.netBalance || 0;
+  const people = data?.people || [];
+  const totalIncome = data?.generalIncome || 0;
+  const totalExpenses = data?.generalExpenses || 0;
+  const netBalance = data?.netBalance || 0;
 
   return (
     <div className={styles.dashboard_container}>
@@ -53,16 +53,16 @@ const Dashboard = () => {
       <div className={styles.cards_grid}>
         <div className={styles.card}>
           <h3>Total Receitas</h3>
-          <p className={`${styles.value} ${styles.success}`}>R$ {formatCurrencyBR(totalReceitas)}</p>
+          <p className={`${styles.value} ${styles.success}`}>R$ {formatCurrencyBR(totalIncome)}</p>
         </div>
         <div className={styles.card}>
           <h3>Total Despesas</h3>
-          <p className={`${styles.value} ${styles.danger}`}>R$ {formatCurrencyBR(totalDespesas)}</p>
+          <p className={`${styles.value} ${styles.danger}`}>R$ {formatCurrencyBR(totalExpenses)}</p>
         </div>
         <div className={styles.card}>
           <h3>Saldo Líquido</h3>
-          <p className={`${styles.value} ${saldoLiquido >= 0 ? styles.success : styles.danger}`}>
-            R$ {formatCurrencyBR(saldoLiquido)}
+          <p className={`${styles.value} ${netBalance >= 0 ? styles.success : styles.danger}`}>
+            R$ {formatCurrencyBR(netBalance)}
           </p>
         </div>
       </div>
@@ -82,13 +82,13 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {people.map((pessoa) => (
-                  <tr key={pessoa.id}>
-                    <td><strong>{pessoa.name}</strong></td>
-                    <td className={styles.success}>R$ {formatCurrencyBR(pessoa.totalIncome)}</td>
-                    <td className={styles.danger}>R$ {formatCurrencyBR(pessoa.totalExpenses)}</td>
-                    <td className={pessoa.balance >= 0 ? styles.success : styles.danger}>
-                      <strong>R$ {formatCurrencyBR(pessoa.balance)}</strong>
+                {people.map((person) => (
+                  <tr key={person.id}>
+                    <td><strong>{person.name}</strong></td>
+                    <td className={styles.success}>R$ {formatCurrencyBR(person.totalIncome)}</td>
+                    <td className={styles.danger}>R$ {formatCurrencyBR(person.totalExpenses)}</td>
+                    <td className={person.balance >= 0 ? styles.success : styles.danger}>
+                      <strong>R$ {formatCurrencyBR(person.balance)}</strong>
                     </td>
                   </tr>
                 ))}

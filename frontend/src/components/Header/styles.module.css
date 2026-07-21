@@ -7,9 +7,36 @@
 .page_title {
   color: var(--color-text-strong);
   font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .page_subtitle {
   color: var(--color-text-muted);
   font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .page_title {
+    font-size: 1.5rem;
+  }
+
+  .page_subtitle {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page_header {
+    gap: 2px;
+  }
+
+  .page_title {
+    font-size: 1.25rem;
+  }
+
+  .page_subtitle {
+    font-size: 0.85rem;
+  }
 }

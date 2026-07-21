@@ -16,44 +16,44 @@ import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 const ITEMS_PER_PAGE = 6;
 
 const Peoples = () => {
-  const [pessoas, setPessoas] = useState<Person[]>([]);
-  const [nome, setNome] = useState('');
-  const [idade, setIdade] = useState('');
+  const [people, setPeople] = useState<Person[]>([]);
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [personToDelete, setPersonToDelete] = useState<Person | null>(null);
 
   useEffect(() => {
-    async function carregarPessoas() {
+    async function loadPeople() {
       try {
-        const dados = await getPeople();
-        setPessoas(dados);
+        const data = await getPeople();
+        setPeople(data);
       } catch (error) {
-        console.error('Erro ao buscar pessoas do banco:', error);
+        console.error('Error fetching people from database:', error);
       } finally {
         setLoading(false);
       }
     }
 
-    carregarPessoas();
+    loadPeople();
   }, []);
 
-  const handleCadastrar = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nome.trim() || !idade) return;
+    if (!name.trim() || !age) return;
 
     try {
-      const novaPessoa = await createPerson({
-        name: nome.trim(),
-        age: Number(idade),
+      const newPerson = await createPerson({
+        name: name.trim(),
+        age: Number(age),
       });
 
-      setPessoas((prev) => [novaPessoa, ...prev]);
-      setNome('');
-      setIdade('');
+      setPeople((prev) => [newPerson, ...prev]);
+      setName('');
+      setAge('');
       setCurrentPage(1); 
     } catch (error) {
-      console.error('Erro ao cadastrar pessoa:', error);
+      console.error('Error registering person:', error);
     }
   };
 
@@ -62,18 +62,18 @@ const Peoples = () => {
 
     try {
       await removePerson(personToDelete.id);
-      setPessoas((prev) => {
-        const novaLista = prev.filter((p) => p.id !== personToDelete.id);
+      setPeople((prev) => {
+        const updatedList = prev.filter((p) => p.id !== personToDelete.id);
         
-        const totalPaginasApisDeletar = Math.ceil(novaLista.length / ITEMS_PER_PAGE);
-        if (currentPage > totalPaginasApisDeletar && currentPage > 1) {
-          setCurrentPage(totalPaginasApisDeletar);
+        const totalPages = Math.ceil(updatedList.length / ITEMS_PER_PAGE);
+        if (currentPage > totalPages && currentPage > 1) {
+          setCurrentPage(totalPages);
         }
         
-        return novaLista;
+        return updatedList;
       });
     } catch (error) {
-      console.error('Erro ao deletar pessoa:', error);
+      console.error('Error deleting person:', error);
     } finally {
       setPersonToDelete(null);
     }
@@ -100,8 +100,8 @@ const Peoples = () => {
 
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const currentPeople = pessoas.slice(indexOfFirstItem, indexOfLastItem);
-  const hasNextPage = indexOfLastItem < pessoas.length;
+  const currentPeople = people.slice(indexOfFirstItem, indexOfLastItem);
+  const hasNextPage = indexOfLastItem < people.length;
 
   return (
     <div className={styles.peoples_container}>
@@ -113,15 +113,15 @@ const Peoples = () => {
       <div className={styles.peoples_layout}>
         <section className={styles.form_section}>
           <h2>Novo Integrante</h2>
-          <form onSubmit={handleCadastrar} className={styles.form}>
+          <form onSubmit={handleRegister} className={styles.form}>
             <div className={styles.input_group}>
               <label htmlFor="nome">Nome Completo</label>
               <input
                 id="nome"
                 type="text"
-                placeholder="Ex: Ryan Costa"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                placeholder="Ex: João Silva"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 maxLength={50}
                 required
               />
@@ -133,8 +133,8 @@ const Peoples = () => {
                 id="idade"
                 type="number"
                 placeholder="Ex: 21"
-                value={idade}
-                onChange={(e) => setIdade(e.target.value)}
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
                 min="0"
                 max="120"
                 required
@@ -148,9 +148,9 @@ const Peoples = () => {
         </section>
 
         <section className={styles.list_section}>
-          <h2>Integrantes Atuais ({pessoas.length})</h2>
+          <h2>Integrantes Atuais ({people.length})</h2>
           
-          {pessoas.length === 0 ? (
+          {people.length === 0 ? (
             <div className={styles.empty_state}>
               <span className={styles.empty_icon}><i className="fa-solid fa-user-group"></i></span>
               <p>Nenhuma pessoa cadastrada ainda.</p>
@@ -158,32 +158,32 @@ const Peoples = () => {
           ) : (
             <>
               <div className={styles.cards_grid}>
-                {currentPeople.map((pessoa) => (
-                  <div key={pessoa.id} className={styles.person_card}>
+                {currentPeople.map((person) => (
+                  <div key={person.id} className={styles.person_card}>
                     <div className={styles.card_main}>
                       <div className={styles.avatar}>
-                        {getInitials(pessoa.name)}
+                        {getInitials(person.name)}
                       </div>
                       <div className={styles.info}>
-                        <h3>{pessoa.name}</h3>
-                        <p>{pessoa.age} {pessoa.age === 1 ? 'ano' : 'anos'}</p>
+                        <h3>{person.name}</h3>
+                        <p>{person.age} {person.age === 1 ? 'ano' : 'anos'}</p>
                       </div>
                     </div>
 
                     <div className={styles.actions}>
                       <Link 
-                        to={`/extrato-integrante/${pessoa.id}`} 
+                        to={`/extrato-integrante/${person.id}`} 
                         className={styles.extrato_btn}
-                        title={`Ver extrato de ${pessoa.name}`}
+                        title={`Ver extrato de ${person.name}`}
                       >
                         <i className="fa-solid fa-receipt"></i>
                       </Link>
 
                       <button 
-                        onClick={() => setPersonToDelete(pessoa)} 
+                        onClick={() => setPersonToDelete(person)} 
                         className={styles.delete_btn}
-                        title={`Remover ${pessoa.name}`}
-                        aria-label={`Remover ${pessoa.name}`}
+                        title={`Remover ${person.name}`}
+                        aria-label={`Remover ${person.name}`}
                       >
                         <i className="fa-solid fa-trash"></i>
                       </button>

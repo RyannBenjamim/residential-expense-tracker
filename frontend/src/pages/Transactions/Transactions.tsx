@@ -14,90 +14,97 @@ import styles from './styles.module.css';
 import Loading from '../../components/Loading/Loading';
 import Pagination from '../../components/Pagination/Pagination';
 import { Header } from '../../components/Header/Header';
+import ConfirmModal from '../../components/ConfirmModal/ConfirmModal';
 
 const ITEMS_PER_PAGE = 4;
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [moradores, setMoradores] = useState<Person[]>([]);
+  const [residents, setResidents] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtroAtual, setFiltroAtual] = useState<'todos' | 'receita' | 'despesa'>('todos');
+  const [currentFilter, setCurrentFilter] = useState<'todos' | 'receita' | 'despesa'>('todos');
   
   const [currentPage, setCurrentPage] = useState(1);
+  const [transactionToDelete, setTransactionToDelete] = useState<Transaction | null>(null);
 
   useEffect(() => {
-    async function carregarDados() {
+    async function loadData() {
       try {
-        const [dadosTransactions, dadosPeople] = await Promise.all([
+        const [transactionsData, peopleData] = await Promise.all([
           getTransactions(),
           getPeople()
         ]);
-        setTransactions(dadosTransactions);
-        setMoradores(dadosPeople);
+        setTransactions(transactionsData);
+        setResidents(peopleData);
       } catch (error) {
-        console.error('Erro ao buscar dados do banco:', error);
+        console.error('Error fetching data from database:', error);
       } finally {
         setLoading(false);
       }
     }
 
-    carregarDados();
+    loadData();
   }, []);
 
   const handleAddTransaction = async (data: { description: string; amount: number; type: TransactionType; personId: string }) => {
     try {
-      const novaTransacao = await createTransaction(data);
-      setTransactions((prev) => [novaTransacao, ...prev]);
+      const newTransaction = await createTransaction(data);
+      setTransactions((prev) => [newTransaction, ...prev]);
       setCurrentPage(1); 
     } catch (error) {
-      console.error('Erro ao salvar transação:', error);
+      console.error('Error saving transaction:', error);
       throw error;
     }
   };
 
-  const handleDeletar = async (id: string) => {
+  const handleConfirmDelete = async () => {
+    if (!transactionToDelete) return;
+
     try {
-      await removeTransaction(id);
+      await removeTransaction(transactionToDelete.id);
+
       setTransactions((prev) => {
-        const novaLista = prev.filter(t => t.id !== id);
+        const updatedList = prev.filter(t => t.id !== transactionToDelete.id);
         
-        const listaFiltradaAtualizada = novaLista.filter(t => {
-          if (filtroAtual === 'todos') return true;
+        const updatedFilteredList = updatedList.filter(t => {
+          if (currentFilter === 'todos') return true;
           const isIncome = t.type === 'Income' || t.type === 0;
           const isExpense = t.type === 'Expense' || t.type === 1;
-          return filtroAtual === 'receita' ? isIncome : isExpense;
+          return currentFilter === 'receita' ? isIncome : isExpense;
         });
 
-        const totalPaginas = Math.ceil(listaFiltradaAtualizada.length / ITEMS_PER_PAGE);
-        if (currentPage > totalPaginas && currentPage > 1) {
-          setCurrentPage(totalPaginas);
+        const totalPages = Math.ceil(updatedFilteredList.length / ITEMS_PER_PAGE);
+        if (currentPage > totalPages && currentPage > 1) {
+          setCurrentPage(totalPages);
         }
 
-        return novaLista;
+        return updatedList;
       });
     } catch (error) {
-      console.error('Erro ao deletar transação:', error);
+      console.error('Error deleting transaction:', error);
+    } finally {
+      setTransactionToDelete(null);
     }
   };
 
-  const transacoesFiltradas = transactions.filter(t => {
-    if (filtroAtual === 'todos') return true;
+  const filteredTransactions = transactions.filter(t => {
+    if (currentFilter === 'todos') return true;
 
     const isIncome = t.type === 'Income' || t.type === 0;
     const isExpense = t.type === 'Expense' || t.type === 1;
 
-    if (filtroAtual === 'receita') return isIncome;
-    if (filtroAtual === 'despesa') return isExpense;
+    if (currentFilter === 'receita') return isIncome;
+    if (currentFilter === 'despesa') return isExpense;
     return true;
   });
 
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const transacoesPaginadas = transacoesFiltradas.slice(indexOfFirstItem, indexOfLastItem);
-  const hasNextPage = indexOfLastItem < transacoesFiltradas.length;
+  const paginatedTransactions = filteredTransactions.slice(indexOfFirstItem, indexOfLastItem);
+  const hasNextPage = indexOfLastItem < filteredTransactions.length;
 
-  const handleFilterChange = (novoFiltro: 'todos' | 'receita' | 'despesa') => {
-    setFiltroAtual(novoFiltro);
+  const handleFilterChange = (newFilter: 'todos' | 'receita' | 'despesa') => {
+    setCurrentFilter(newFilter);
     setCurrentPage(1);
   };
 
@@ -123,7 +130,7 @@ const Transactions = () => {
 
       <div className={styles.transactions_layout}>
         <TransactionForm 
-          moradores={moradores} 
+          moradores={residents} 
           onAddTransaction={handleAddTransaction} 
         />
 
@@ -131,12 +138,12 @@ const Transactions = () => {
           <div className={styles.list_header}>
             <h2>Registros</h2>
             <TransactionFilter 
-              currentFilter={filtroAtual} 
+              currentFilter={currentFilter} 
               onFilterChange={handleFilterChange} 
             />
           </div>
 
-          {transacoesFiltradas.length === 0 ? (
+          {filteredTransactions.length === 0 ? (
             <div className={styles.empty_state}>
               <span className={styles.empty_icon}><i className="fa-solid fa-receipt"></i></span>
               <p>Nenhuma movimentação encontrada.</p>
@@ -144,14 +151,14 @@ const Transactions = () => {
           ) : (
             <>
               <div className={styles.transactions_list}>
-                {transacoesPaginadas.map((t) => {
-                  const morador = moradores.find(m => m.id === t.personId);
+                {paginatedTransactions.map((t) => {
+                  const resident = residents.find(m => m.id === t.personId);
                   return (
                     <TransactionItem 
                       key={t.id} 
                       transaction={t} 
-                      personName={morador ? morador.name : 'Desconhecido'}
-                      onDelete={handleDeletar} 
+                      personName={resident ? resident.name : 'Desconhecido'}
+                      onDelete={() => setTransactionToDelete(t)} 
                     />
                   );
                 })}
@@ -167,6 +174,16 @@ const Transactions = () => {
           )}
         </section>
       </div>
+
+      <ConfirmModal
+        isOpen={Boolean(transactionToDelete)}
+        title="Confirmar Exclusão"
+        message={`Tem certeza que deseja remover a transação "${transactionToDelete?.description}"? Esta ação não poderá ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setTransactionToDelete(null)}
+      />
     </div>
   );
 };

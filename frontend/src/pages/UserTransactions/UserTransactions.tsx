@@ -16,7 +16,7 @@ const UserTransactions = () => {
   const { personId } = useParams<{ personId: string }>();
   const navigate = useNavigate();
 
-  const [moradores, setMoradores] = useState<Person[]>([]);
+  const [residents, setResidents] = useState<Person[]>([]);
   const [userTransactions, setUserTransactions] = useState<Transaction[]>([]);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(false);
@@ -24,22 +24,22 @@ const UserTransactions = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    async function carregarMoradores() {
+    async function loadResidents() {
       try {
-        const dadosPeople = await getPeople();
-        setMoradores(dadosPeople);
+        const peopleData = await getPeople();
+        setResidents(peopleData);
 
-        if (!personId && dadosPeople.length > 0) {
-          navigate(`/extrato-integrante/${dadosPeople[0].id}`, { replace: true });
+        if (!personId && peopleData.length > 0) {
+          navigate(`/extrato-integrante/${peopleData[0].id}`, { replace: true });
         }
       } catch (error) {
-        console.error('Erro ao buscar integrantes:', error);
+        console.error('Error fetching residents:', error);
       } finally {
         setLoadingInitial(false);
       }
     }
 
-    carregarMoradores();
+    loadResidents();
   }, [personId, navigate]);
 
   useEffect(() => {
@@ -47,24 +47,24 @@ const UserTransactions = () => {
 
     const currentPersonId = personId;
 
-    async function carregarTransacoesDoUsuario() {
+    async function loadUserTransactions() {
       setLoadingTransactions(true);
       try {
-        const transacoes = await findByPersonId(currentPersonId);
-        setUserTransactions(transacoes);
+        const transactions = await findByPersonId(currentPersonId);
+        setUserTransactions(transactions);
         setCurrentPage(1);
       } catch (error) {
-        console.error(`Erro ao buscar transações da pessoa ${personId}:`, error);
+        console.error(`Error fetching transactions for person ${personId}:`, error);
         setUserTransactions([]);
       } finally {
         setLoadingTransactions(false);
       }
     }
 
-    carregarTransacoesDoUsuario();
+    loadUserTransactions();
   }, [personId]);
 
-  const usuarioSelecionado = moradores.find(m => m.id === personId);
+  const selectedUser = residents.find(r => r.id === personId);
 
   const handleSelectChange = (id: string) => {
     if (id) {
@@ -74,24 +74,24 @@ const UserTransactions = () => {
 
   const indexOfLastItem = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
-  const transacoesPaginadas = userTransactions.slice(indexOfFirstItem, indexOfLastItem);
+  const paginatedTransactions = userTransactions.slice(indexOfFirstItem, indexOfLastItem);
   const hasNextPage = indexOfLastItem < userTransactions.length;
 
-  const handleDeletarTransacao = async (id: string) => {
+  const handleDeleteTransaction = async (id: string) => {
     try {
       await removeTransaction(id);
       setUserTransactions((prev) => {
-        const novaLista = prev.filter(t => t.id !== id);
+        const updatedList = prev.filter(t => t.id !== id);
         
-        const totalPaginas = Math.ceil(novaLista.length / ITEMS_PER_PAGE);
-        if (currentPage > totalPaginas && currentPage > 1) {
-          setCurrentPage(totalPaginas);
+        const totalPages = Math.ceil(updatedList.length / ITEMS_PER_PAGE);
+        if (currentPage > totalPages && currentPage > 1) {
+          setCurrentPage(totalPages);
         }
 
-        return novaLista;
+        return updatedList;
       });
     } catch (error) {
-      console.error('Erro ao deletar transação:', error);
+      console.error('Error deleting transaction:', error);
     }
   };
 
@@ -103,9 +103,9 @@ const UserTransactions = () => {
     return names[0][0] ? names[0][0].toUpperCase() : '?';
   };
 
-  const moradoresOptions = moradores.map(m => ({
-    value: m.id,
-    label: m.name
+  const residentsOptions = residents.map(r => ({
+    value: r.id,
+    label: r.name
   }));
 
   if (loadingInitial) {
@@ -131,20 +131,20 @@ const UserTransactions = () => {
           label="Buscar Integrante:"
           value={personId || ''} 
           onChange={handleSelectChange}
-          options={moradoresOptions}
-          placeholder={moradores.length === 0 ? "Nenhum integrante cadastrado" : "Selecione um integrante"}
+          options={residentsOptions}
+          placeholder={residents.length === 0 ? "Nenhum integrante cadastrado" : "Selecione um integrante"}
         />
       </div>
 
-      {usuarioSelecionado ? (
+      {selectedUser ? (
         <div className={styles.content_layout}>
           <aside className={styles.profile_card}>
             <div className={styles.avatar}>
-              {getInitials(usuarioSelecionado.name)}
+              {getInitials(selectedUser.name)}
             </div>
-            <h2>{usuarioSelecionado.name}</h2>
+            <h2>{selectedUser.name}</h2>
             <p className={styles.user_age}>
-              {usuarioSelecionado.age} {usuarioSelecionado.age === 1 ? 'ano' : 'anos'}
+              {selectedUser.age} {selectedUser.age === 1 ? 'ano' : 'anos'}
             </p>
             <div className={styles.meta_info}>
               <span>Total de movimentações: <strong>{userTransactions.length}</strong></span>
@@ -166,12 +166,12 @@ const UserTransactions = () => {
             ) : (
               <>
                 <div className={styles.transactions_list}>
-                  {transacoesPaginadas.map((t) => (
+                  {paginatedTransactions.map((t) => (
                     <TransactionItem 
                       key={t.id} 
                       transaction={t} 
-                      personName={usuarioSelecionado.name}
-                      onDelete={handleDeletarTransacao} 
+                      personName={selectedUser.name}
+                      onDelete={handleDeleteTransaction} 
                     />
                   ))}
                 </div>

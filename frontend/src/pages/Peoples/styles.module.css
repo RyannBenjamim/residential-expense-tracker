@@ -13,11 +13,14 @@
 .page_title {
   color: var(--color-text-strong);
   font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .page_subtitle {
   color: var(--color-text-muted);
   font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .peoples_layout {
@@ -27,13 +30,8 @@
   align-items: start;
 }
 
-@media (max-width: 900px) {
-  .peoples_layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-.form_section, .list_section {
+.form_section, 
+.list_section {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 12px;
@@ -41,7 +39,8 @@
   box-shadow: var(--shadow-card);
 }
 
-.form_section h2, .list_section h2 {
+.form_section h2, 
+.list_section h2 {
   font-size: 1.15rem;
   color: var(--color-text-strong);
   margin-bottom: 20px;
@@ -74,6 +73,8 @@
   border-radius: 8px;
   font-size: 0.95rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input_group input:focus {
@@ -86,13 +87,73 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
-  cursor: pointer;
+}
+
+.person_card {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.person_card:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-primary);
+}
+
+.card_main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  background: var(--color-hover-card-post);
+  border: 1px solid var(--color-border);
+  color: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.info {
+  min-width: 0;
+}
+
+.info h3 {
+  font-size: 0.95rem;
+  color: var(--color-text-strong);
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info p {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
 }
 
 .actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .extrato_btn {
@@ -114,55 +175,6 @@
   color: var(--color-btn-text);
   border-color: var(--color-primary-light);
   transform: translateY(-1px);
-}
-
-.person_card {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.person_card:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-primary);
-}
-
-.card_main {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.avatar {
-  width: 44px;
-  height: 44px;
-  background: var(--color-hover-card-post);
-  border: 1px solid var(--color-border);
-  color: var(--color-primary);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-}
-
-.info h3 {
-  font-size: 0.95rem;
-  color: var(--color-text-strong);
-  font-weight: 600;
-  margin-bottom: 2px;
-}
-
-.info p {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
 }
 
 .delete_btn {
@@ -205,4 +217,76 @@
 
 .empty_icon {
   font-size: 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .peoples_layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .peoples_container {
+    gap: 24px;
+  }
+
+  .page_title {
+    font-size: 1.4rem;
+  }
+
+  .page_subtitle {
+    font-size: 0.875rem;
+  }
+
+  .form_section, 
+  .list_section {
+    padding: 16px;
+  }
+
+  .form_section h2, 
+  .list_section h2 {
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+  }
+
+  .cards_grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .person_card {
+    padding: 12px 14px;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 0.85rem;
+  }
+
+  .extrato_btn,
+  .delete_btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .delete_btn svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .person_card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px dashed var(--color-border);
+  }
 }

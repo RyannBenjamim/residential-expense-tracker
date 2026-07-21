@@ -22,15 +22,22 @@
   border-left: 4px solid var(--color-danger);
 }
 
+.item_main {
+  flex: 1;
+  min-width: 0;
+}
+
 .info_block h3 {
   font-size: 0.95rem;
   color: var(--color-text-strong);
   font-weight: 600;
   margin-bottom: 4px;
+  word-break: break-word;
 }
 
 .meta_info {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   font-size: 0.8rem;
   color: var(--color-text-muted);
@@ -40,6 +47,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .price {
@@ -68,6 +76,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+  flex-shrink: 0;
 }
 
 .delete_btn:hover {
@@ -82,4 +91,41 @@
   width: 16px;
   height: 16px;
   fill: currentColor;
+}
+
+@media (max-width: 576px) {
+  .transaction_item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .meta_info {
+    gap: 8px 12px;
+  }
+
+  .item_actions {
+    gap: 12px;
+  }
+
+  .price {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .transaction_item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .item_main {
+    width: 100%;
+  }
+
+  .item_actions {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px dashed var(--color-border);
+  }
 }
